@@ -146,10 +146,6 @@ async function convertMCPServerToLangChainTools(
         func: async (input) => {
           logger.info(`MCP Tool "${tool.name}" received input:`, input);
 
-          if (Object.keys(input).length === 0) {
-            return 'No input provided';
-          }
-
           // Execute tool call
           const result = await client?.request(
             {
@@ -190,7 +186,14 @@ async function convertMCPServerToLangChainTools(
     return { tools, cleanup };
   } catch (error: unknown) {
     // Proper cleanup in case of initialization error
-    if (transport) await transport.close();
+    if (transport) {
+      try {
+        await transport.close();
+      } catch (cleanupError) {
+        // Log cleanup error but don't let it override the original error
+        logger.error(`Failed to cleanup during initialization error: ${cleanupError}`);
+      }
+    }
     throw new MCPInitializationError(
       serverName,
       `Failed to initialize MCP server: ${error instanceof Error ? error.message : String(error)}`,
