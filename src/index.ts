@@ -165,6 +165,6 @@ async function main(): Promise<void> {
 
 // Application entry point with error handling
 main().catch((error: unknown) => {
-  const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+  console.error(error);
   process.exit(1);
 });

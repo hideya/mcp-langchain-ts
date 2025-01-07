@@ -25,7 +25,6 @@ interface LogOptions {
 
 interface MCPError extends Error {
   serverName: string;
-  code: string;
   details?: unknown;
 }
 
@@ -36,7 +35,6 @@ export interface MCPServerCleanupFunction {
 class MCPInitializationError extends Error implements MCPError {
   constructor(
     public serverName: string,
-    public code: string,
     message: string,
     public details?: unknown
   ) {
@@ -78,7 +76,7 @@ export async function convertMCPServersToLangChainTools(
       allTools.push(...tools);
       cleanupCallbacks.push(cleanup);
     } else {
-      logger.error(`MCP server "${serverNames[index]}": failed to initialize: ${result.reason}`);
+      logger.error(`MCP server "${serverNames[index]}": failed to initialize: ${result.reason.details}`);
       throw result.reason;
     }
   });
@@ -195,7 +193,6 @@ async function convertMCPServerToLangChainTools(
     if (transport) await transport.close();
     throw new MCPInitializationError(
       serverName,
-      'INIT_FAILED',
       `Failed to initialize MCP server: ${error instanceof Error ? error.message : String(error)}`,
       error
     );
