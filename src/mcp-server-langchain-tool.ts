@@ -49,7 +49,7 @@ export async function convertMCPServersToLangChainTools(
   configs: MCPServersConfig,
   options?: LogOptions
 ): Promise<{
-  allTools: DynamicStructuredTool[];
+  tools: DynamicStructuredTool[];
   cleanup: MCPServerCleanupFunction;
 }> {
   const allTools: DynamicStructuredTool[] = [];
@@ -79,6 +79,7 @@ export async function convertMCPServersToLangChainTools(
       cleanupCallbacks.push(cleanup);
     } else {
       logger.error(`MCP server "${serverNames[index]}": failed to initialize: ${result.reason}`);
+      throw result.reason;
     }
   });
 
@@ -88,17 +89,15 @@ export async function convertMCPServersToLangChainTools(
 
     // Log any cleanup failures
     const failures = results.filter(result => result.status === 'rejected');
-    if (failures.length > 0) {
-      failures.forEach((failure, index) => {
-        logger.error(`MCP server "${serverNames[index]}": failed to close: ${failure.reason}`);
-      });
-    }
+    failures.forEach((failure, index) => {
+      logger.error(`MCP server "${serverNames[index]}": failed to close: ${failure.reason}`);
+    });
   }
 
   logger.info(`MCP servers initialized and found ${allTools.length} tool(s) in total:`);
   allTools.forEach((tool) => logger.info(`- ${tool.name}`));
 
-  return { allTools, cleanup };
+  return { tools: allTools, cleanup };
 }
 
 async function convertMCPServerToLangChainTools(
