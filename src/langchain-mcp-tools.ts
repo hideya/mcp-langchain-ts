@@ -1,6 +1,3 @@
-// Copyright (C) 2024 Hideya Kawahara
-// SPDX-License-Identifier: MIT
-
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -9,6 +6,7 @@ import { jsonSchemaToZod, JsonSchema } from '@n8n/json-schema-to-zod';
 import { z } from 'zod';
 import { Logger } from './logger.js';
 
+// Base configuration types for MCP servers
 interface MCPServerConfig {
   command: string;
   args: readonly string[];
@@ -32,6 +30,7 @@ export interface MCPServerCleanupFunction {
   (): Promise<void>;
 }
 
+// Custom error type for MCP server initialization failures
 class MCPInitializationError extends Error implements MCPError {
   constructor(
     public serverName: string,
@@ -43,6 +42,7 @@ class MCPInitializationError extends Error implements MCPError {
   }
 }
 
+// Primary function to convert multiple MCP servers to LangChain tools
 export async function convertMCPServersToLangChainTools(
   configs: MCPServersConfig,
   options?: LogOptions
@@ -55,8 +55,6 @@ export async function convertMCPServersToLangChainTools(
   const logger = new Logger({ level: options?.logLevel || 'info' });
 
   const serverInitPromises = Object.entries(configs).map(async ([name, config]) => {
-    logger.info(`Initializing MCP server "${name}"`);
-    logger.debug(`with config: `, config);
     const result = await convertMCPServerToLangChainTools(name, config, logger);
     return { name, result };
   });
@@ -92,12 +90,13 @@ export async function convertMCPServersToLangChainTools(
     });
   }
 
-  logger.info(`MCP servers initialized and found ${allTools.length} tool(s) in total:`);
-  allTools.forEach((tool) => logger.info(`- ${tool.name}`));
+  logger.info(`MCP servers initialized: ${allTools.length} tool(s) available in total`);
+  allTools.forEach((tool) => logger.debug(`- ${tool.name}`));
 
   return { tools: allTools, cleanup };
 }
 
+// Convert a single MCP server into LangChain tools
 async function convertMCPServerToLangChainTools(
   serverName: string,
   config: MCPServerConfig,
@@ -109,11 +108,21 @@ async function convertMCPServerToLangChainTools(
   let transport: StdioClientTransport | null = null;
   let client: Client | null = null;
 
+  logger.info(`MCP server "${serverName}": initializing with: ${JSON.stringify(config)}`);
+
+  // NOTE: Some servers (e.g. Brave) seem to require PATH to be set.
+  // To avoid confusion, it was decided to automatically append it to the env
+  // if not explicitly set by the config.
+  const env = { ...config.env };
+  if (!env.PATH) {
+    env.PATH = process.env.PATH || '';
+  }
+
   try {
     transport = new StdioClientTransport({
       command: config.command,
       args: config.args as string[],
-      env: config.env,
+      env: env,
     });
 
     client = new Client(
@@ -127,13 +136,12 @@ async function convertMCPServerToLangChainTools(
     );
 
     await client.connect(transport);
+    logger.info(`MCP server "${serverName}": connected`);
 
     const toolsResponse = await client.request(
       { method: "tools/list" },
       ListToolsResultSchema
     );
-
-    logger.info(`MCP server "${serverName}": connected`);
 
     const tools = toolsResponse.tools.map((tool) => (
       new DynamicStructuredTool({
@@ -167,19 +175,19 @@ async function convertMCPServerToLangChainTools(
             .map(content => content.text)
             .join('\n\n');
 
-          // return JSON.stringify(result.content);
           return filteredResult;
+          // return JSON.stringify(result.content);
         },
       })
     ));
 
-    logger.info(`MCP server "${serverName}": found ${tools.length} tool(s)`);
-    tools.forEach((tool) => logger.debug(`- ${tool.name}`));
+    logger.info(`MCP server "${serverName}": ${tools.length} tool(s) available:`);
+    tools.forEach((tool) => logger.info(`- ${tool.name}`));
 
     async function cleanup(): Promise<void> {
       if (transport) {
         await transport.close();
-        logger.info(`Closed MCP connection to "${serverName}"`);
+        logger.info(`MCP server "${serverName}": connection closed`);
       }
     }
 

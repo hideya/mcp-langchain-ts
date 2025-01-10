@@ -4,7 +4,7 @@
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { MemorySaver } from '@langchain/langgraph';
 import { HumanMessage } from '@langchain/core/messages';
-import { convertMCPServersToLangChainTools, MCPServerCleanupFunction } from './mcp-server-langchain-tool.js';
+import { convertMCPServersToLangChainTools, MCPServerCleanupFunction } from './langchain-mcp-tools.js';
 import { initChatModel } from './init-chat-model.js';
 import { loadConfig, Config } from './load-config.js';
 import readline from 'readline';
@@ -19,7 +19,7 @@ dotenv.config();
 const DEFAULT_CONFIG_PATH = './llm-mcp-config.json5';
 
 const SAMPLE_QUERIES = [
-  'Whats the weather like in SF?',
+  'Whats the weather like in SF tomorrow?',
   'Read and briefly summarize the file ./LICENSE',
   'Read the news headlines on cnn.com?',
   // 'Show me the page cnn.com',

@@ -62,8 +62,7 @@
         //         "@modelcontextprotocol/server-brave-search"
         //     ],
         //     "env": {
-        //         "BRAVE_API_KEY": "${BRAVE_API_KEY}",
-        //         "PATH": "${PATH}" // Somehow, PATH need to be explicitly specified here
+        //         "BRAVE_API_KEY": "${BRAVE_API_KEY}"
         //     }
         // },
     }
