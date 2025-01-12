@@ -40,10 +40,10 @@ export function initChatModel(config: ChatModelConfig): BaseChatModel {
     }
 
     if (typeof model?.bindTools === 'function') {
-      if (config.tools && config.tools.length > 0) {
+      if (tools && tools.length > 0) {
         // FIXME
         // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-        model = (model as { bindTools: Function }).bindTools(config.tools);
+        model = (model as { bindTools: Function }).bindTools(tools);
       }
     } else {
       throw new Error(
