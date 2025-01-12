@@ -17,8 +17,11 @@
   "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
+    "start:h": "tsx src/index.ts -h",
+    "start:v": "tsx src/index.ts -v",
     "dev": "tsx watch src/index.ts",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "clean": "rm -rf node_modules"
   },
   "dependencies": {
     "@langchain/anthropic": "^0.3.11",

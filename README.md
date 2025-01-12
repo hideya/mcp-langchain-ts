@@ -1,52 +1,23 @@
-# MCP Client Implementation Using LangChain / TypeScript
+# MCP Client Using LangChain / TypeScript [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/hideya/mcp-langchain-client-ts/blob/main/LICENSE)
 
-This simple app demonstrates
-[Model Context Protocol](https://modelcontextprotocol.io/) server invocations from
-LangChain ReAct Agent by wrapping MCP server tools into LangChain Tools.
+This simple [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
+client demonstrates MCP server invocations by LangChain ReAct Agent.
 
-LLMs from OpenAI, Anthropic and Groq are currently supported.
+It leverages a utility function `convertMCPServersToLangChainTools()` from
+[`@h1deya/langchain-mcp-tools`](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools),
+which initializes specified MCP servers,
+and returns [LangChain Tools](https://js.langchain.com/docs/how_to/tool_calling/)
+that wrap all the tools found in the MCP servers.
 
-## Features
+LLMs from Anthropic, OpenAI and Groq are currently supported.
 
-A utility function `convertMcpToLangchainTools()` was introduced to simplify the work.
+## Requirements
 
-It accepts the MCP server configuration in the same format
-as [Claude for Desktop](https://modelcontextprotocol.io/quickstart/user);
-a JS Object version of its JSON configuration file, e.g.:
-
-```ts
-const serverConfig: McpServersConfig = {
-  filesystem: {
-    command: 'npx',
-    args: [
-      '-y',
-      '@modelcontextprotocol/server-filesystem',
-      '/Users/username/Desktop'
-    ]
-  },
-  another_mcp_server: {
-    ...
-  }
-};
-
-const {allTools, cleanup} = await convertMcpToLangchainTools(serverConfig);
-```
-
-The utility functoin initializes all the MCP server connections concurrently,
-and returns LangChain Tools (`allTools: DynamicStructuredTool[]`)
-by gathering all the available MCP server tools,
-and by wrapping them into LangChain Tools (it also returns `cleanup` callback function
-that is used to close connections to MCP servers when finished).
-
-The returned tools can be used by LangChain, e.g.:
-
-```ts
-const agent = createReactAgent({
-  llm: llmModel,
-  tools: allTools,
-  checkpointSaver: new MemorySaver()
-});
-```
+- Node.js version 16 or higher installed
+- API keys from [Anthropic](https://console.anthropic.com/settings/keys),
+  [OpenAI](https://platform.openai.com/api-keys), and/or
+  [Groq](https://console.groq.com/keys)
+  as needed.
 
 ## Setup
 1. Install dependencies:
@@ -62,23 +33,29 @@ const agent = createReactAgent({
     - `.gitignore` is configured to ignore `.env`
       to prevent accidental commits of the credentials.
 
-3. Configure LLM and MCP Servers settings `llm-mcp-config.json5` as needed.
+3. Configure LLM and MCP Servers settings `llm_mcp_config.json5` as needed.
 
-    - The configuration file format is [JSON5](https://json5.org/),
+    - [The configuration file format](https://github.com/hideya/mcp-client-langchain-ts/blob/main/llm_mcp_config.json5)
+      for MCP servers follows the same structure as
+      [Claude for Desktop](https://modelcontextprotocol.io/quickstart/user),
+      with one difference: the key name `mcpServers` has been changed
+      to `mcp_servers` to follow the snake_case convention
+      commonly used in JSON configuration files.
+    - The file format is [JSON5](https://json5.org/),
       where comments and trailing commas are allowed.
-    - The file format is further extended to
-      replace `${...}` notations with the values of appropriate environment variables.
-    - Put all the credentials and private info into the `.env` file
-      and refer to them with `${...}` notation if necessary.
-
+    - The format is further extended to replace `${...}` notations
+      with the values of corresponding environment variables.
+    - Keep all the credentials and private info in the `.env` file
+      and refer to them with `${...}` notation as needed.
 
 
 ## Usage
-Development (watch) mode:
-```bash
-npm run dev
-```
-Regular mode:
+
+Run the app:
 ```bash
 npm start
 ```
+
+At the prompt, you can simply press Enter to use sample queries that perform MCP server tool invocations.
+
+Sample queries can be configured in  `llm_mcp_config.json5`

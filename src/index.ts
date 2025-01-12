@@ -1,6 +1,3 @@
-// Copyright (C) 2024 Hideya Kawahara
-// SPDX-License-Identifier: MIT
-
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { MemorySaver } from '@langchain/langgraph';
 import { HumanMessage } from '@langchain/core/messages';
@@ -16,13 +13,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Constants
-const SAMPLE_QUERIES = [
-  'Whats the weather like in SF tomorrow?',
-  'Read and briefly summarize the file ./LICENSE',
-  'Read the news headlines on cnn.com?',
-  // 'Show me the page cnn.com',
-] as const;
-
 const COLORS = {
   YELLOW: '\x1b[33m',
   CYAN: '\x1b[36m',
@@ -52,6 +42,7 @@ const parseArguments = (): Arguments => {
         demandOption: false,
         default: false,
         alias: 'v',
+        demandOption: false
       },
     })
     .help()
@@ -105,9 +96,11 @@ async function handleConversation(
   verbose: boolean
 ): Promise<void> {
   console.log('\nConversation started. Type "quit" or "q" to end the conversation.\n');
-  console.log('Sample Queries (type just enter to supply them one by one):');
-  remainingQueries.forEach(query => console.log(`- ${query}`));
-  console.log();
+  if (remainingQueries && remainingQueries.length > 0) {
+    console.log('Sample Queries (just type Enter to supply them one by one):');
+    remainingQueries.forEach(query => console.log(`- ${query}`));
+    console.log();
+  }
 
   const rl = createReadlineInterface();
 
@@ -143,11 +136,17 @@ async function handleConversation(
 // Application initialization
 async function initializeReactAgent(config: Config) {
   console.log('Initializing model...', config.llm, '\n');
-  const llm = initChatModel(config.llm);
+  const llmConfig = {
+    modelProvider: config.llm.model_provider,
+    model: config.llm.model,
+    temperature: config.llm.temperature,
+    maxTokens: config.llm.max_tokens,
+  }
+  const llm = initChatModel(llmConfig);
 
-  console.log(`Initializing ${Object.keys(config.mcpServers).length} MCP server(s)...\n`);
+  console.log(`Initializing ${Object.keys(config.mcp_servers).length} MCP server(s)...\n`);
   const { tools, cleanup } = await convertMcpToLangchainTools(
-    config.mcpServers,
+    config.mcp_servers,
     { logLevel: 'info' }
   );
 
@@ -171,7 +170,7 @@ async function main(): Promise<void> {
     const { agent, cleanup } = await initializeReactAgent(config);
     mcpCleanup = cleanup;
 
-    await handleConversation(agent, [...SAMPLE_QUERIES], argv.verbose);
+    await handleConversation(agent, [...config.sample_queries], argv.verbose);
 
   } finally {
     if (mcpCleanup) {

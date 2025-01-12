@@ -1,31 +1,34 @@
-//
 // The configuration file format is [JSON5](https://json5.org/),
 // where comments and trailing commas are allowed.
 // The file format is further extended to replace `${...}` notations
-// with the values of appropriate environment variables.
-// Put all the credentials and private into the `.env` file
-// and refer to them with `${...}` notation if necessary.
-//
+// with the values of corresponding environment variables.
+// Keep all the credentials and private into the `.env` file
+// and refer to them with `${...}` notation as needed.
 {
     "llm": {
-        "provider": "openai",
-        "modelName": "gpt-4o-mini",
+        "model_provider": "anthropic",
+        "model": "claude-3-5-haiku-latest",
         "temperature": 0.0,
-        "maxTokens": 1000,
+        "max_tokens": 1000,
     },
     // "llm": {
-    //     "provider": "anthropic",
-    //     "modelName": "claude-3-5-haiku-latest",
+    //     "model_provider": "openai",
+    //     "model": "gpt-4o-mini",
     //     "temperature": 0.0,
-    //     "maxTokens": 1000,
+    //     "max_tokens": 1000,
     // },
     // "llm": {
-    //     "provider": "groq",
-    //     "modelName": "mixtral-8x7b-32768",
+    //     "model_provider": "groq",
+    //     "model": "llama-3.1-8b-instant",
     //     "temperature": 0.0,
-    //     "maxTokens": 1000,
+    //     "max_tokens": 1000,
     // },
-    "mcpServers": {
+    "sample_queries": [
+        "Tomorrow's weather in SF?",
+        "Read and briefly summarize the LICENSE file",
+        "Read the news headlines on bbc.com",
+    ],
+    "mcp_servers": {
         // https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
         "filesystem": {
             "command": "npx",
@@ -47,7 +50,6 @@
                 "-y",
                 "@h1deya/mcp-server-weather"
             ]
-
         },
         // // https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer
         // "puppeteer": {

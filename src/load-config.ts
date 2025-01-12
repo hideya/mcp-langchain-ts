@@ -1,17 +1,14 @@
-// Copyright (C) 2024 Hideya Kawahara
-// SPDX-License-Identifier: MIT
-
 import JSON5 from 'json5';
 import { readFileSync } from 'fs';
 
 export interface LLMConfig {
-  provider: string;
-  modelName?: string;
+  model_provider: string;
+  model?: string;
   temperature?: number;
-  maxTokens?: number;
+  max_tokens?: number;
 }
 
-export interface McpServerConfig {
+export interface MCPServerConfig {
   command: string;
   args: string[];
   env?: Record<string, string>;
@@ -19,8 +16,9 @@ export interface McpServerConfig {
 
 export interface Config {
   llm: LLMConfig;
-  mcpServers: {
-    [key: string]: McpServerConfig;
+  sample_queries?: string[];
+  mcp_servers: {
+    [key: string]: MCPServerConfig;
   }
 }
 
@@ -47,64 +45,73 @@ export function loadConfig(path: string): Config {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateConfig(config: any): asserts config is Config {
+function validateConfig(config: unknown): asserts config is Config {
   if (typeof config !== 'object' || config === null) {
     throw new Error('Configuration must be an object');
   }
 
-  if (!config.llm) {
+  if (!('llm' in config)) {
     throw new Error('LLM configuration is required');
   }
   validateLLMConfig(config.llm);
 
-  if (typeof config.mcpServers !== 'object' || config.mcpServers === null) {
-    throw new Error('mcpServers must be an object');
+  if ('sample_queries' in config) {
+    if (!Array.isArray(config.sample_queries)) {
+      throw new Error('sample_queries must be an array if provided');
+    }
+    if (config.sample_queries.some((query: unknown) => typeof query !== 'string')) {
+      throw new Error('All sample queries must be strings');
+    }
   }
 
-  Object.entries(config.mcpServers).forEach(([key, value]) => {
+  if (!('mcp_servers' in config)) {
+    throw new Error('mcp_servers configuration is required');
+  }
+  if (typeof config.mcp_servers !== 'object' || config.mcp_servers === null) {
+    throw new Error('mcp_servers must be an object');
+  }
+
+  Object.entries(config.mcp_servers).forEach(([key, value]) => {
     try {
-      validateMcpServerConfig(value);
+      validateMCPServerConfig(value);
     } catch (error) {
       throw new Error(`Invalid configuration for MCP server "${key}": ${error instanceof Error ? error.message : String(error)}`);
     }
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateLLMConfig(llmConfig: any): asserts llmConfig is LLMConfig {
+function validateLLMConfig(llmConfig: unknown): asserts llmConfig is LLMConfig {
   if (typeof llmConfig !== 'object' || llmConfig === null) {
     throw new Error('LLM configuration must be an object');
   }
 
-  if (typeof llmConfig.provider !== 'string') {
-    throw new Error('LLM provider must be a string');
+  if (!('model_provider' in llmConfig) || typeof llmConfig.model_provider !== 'string') {
+    throw new Error('LLM model_provider must be a string');
   }
 
-  if (llmConfig.modelName !== undefined && typeof llmConfig.modelName !== 'string') {
-    throw new Error('LLM modelName must be a string if provided');
+  if ('model' in llmConfig && typeof llmConfig.model !== 'string') {
+    throw new Error('LLM model must be a string if provided');
   }
 
-  if (llmConfig.temperature !== undefined && typeof llmConfig.temperature !== 'number') {
+  if ('temperature' in llmConfig && typeof llmConfig.temperature !== 'number') {
     throw new Error('LLM temperature must be a number if provided');
   }
 
-  if (llmConfig.maxTokens !== undefined && typeof llmConfig.maxTokens !== 'number') {
-    throw new Error('LLM maxTokens must be a number if provided');
+  if ('max_tokens' in llmConfig && typeof llmConfig.max_tokens !== 'number') {
+    throw new Error('LLM max_tokens must be a number if provided');
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateMcpServerConfig(serverConfig: any): asserts serverConfig is McpServerConfig {
+function validateMCPServerConfig(serverConfig: unknown): asserts serverConfig is MCPServerConfig {
   if (typeof serverConfig !== 'object' || serverConfig === null) {
     throw new Error('MCP server configuration must be an object');
   }
 
-  if (typeof serverConfig.command !== 'string') {
+  if (!('command' in serverConfig) || typeof serverConfig.command !== 'string') {
     throw new Error('MCP server command must be a string');
   }
 
-  if (!Array.isArray(serverConfig.args)) {
+  if (!('args' in serverConfig) || !Array.isArray(serverConfig.args)) {
     throw new Error('MCP server args must be an array');
   }
 
@@ -112,7 +119,7 @@ function validateMcpServerConfig(serverConfig: any): asserts serverConfig is Mcp
     throw new Error('All MCP server args must be strings');
   }
 
-  if (serverConfig.env !== undefined) {
+  if ('env' in serverConfig && serverConfig.env !== undefined) {
     if (typeof serverConfig.env !== 'object' || serverConfig.env === null) {
       throw new Error('MCP server env must be an object if provided');
     }
