@@ -125,13 +125,15 @@ async function handleConversation(
       { configurable: { thread_id: 'test-thread' } }
     );
 
+    // the last message should be an AIMessage
     const result = agentFinalState.messages[agentFinalState.messages.length - 1].content;
     const messageOneBefore = agentFinalState.messages[agentFinalState.messages.length - 2]
     if (messageOneBefore.constructor.name === 'ToolMessage') {
       if (verbose) {
+        // show tools call respose
         console.log(messageOneBefore.content);
       }
-      console.log(); // give a space
+      console.log(); // new line after tool call output
     }
 
     console.log(`${COLORS.CYAN}${result}${COLORS.RESET}\n`);

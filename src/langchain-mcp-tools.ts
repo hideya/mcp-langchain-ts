@@ -166,17 +166,11 @@ async function convertSingleMcpToLangchainTools(
             CallToolResultSchema
           );
 
-          const roughLength = JSON.stringify(result).length;
+          const resultStringfied = JSON.stringify(result?.content)
+          const roughLength = resultStringfied.length;
           logger.info(`MCP tool "${serverName}"/"${tool.name}" received result (length: ${roughLength})`);
-          logger.debug('result:', result);
-
-          const filteredResult = result?.content
-            .filter(content => content.type === 'text')
-            .map(content => content.text)
-            .join('\n\n');
-
-          return filteredResult;
-          // return JSON.stringify(result.content);
+          logger.debug('result:', resultStringfied);
+          return resultStringfied;
         },
       })
     ));
