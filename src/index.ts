@@ -42,7 +42,6 @@ const parseArguments = (): Arguments => {
         demandOption: false,
         default: false,
         alias: 'v',
-        demandOption: false
       },
     })
     .help()
@@ -170,7 +169,7 @@ async function main(): Promise<void> {
     const { agent, cleanup } = await initializeReactAgent(config);
     mcpCleanup = cleanup;
 
-    await handleConversation(agent, [...config.sample_queries], argv.verbose);
+    await handleConversation(agent, config.sample_queries ?? [], argv.verbose);
 
   } finally {
     if (mcpCleanup) {
