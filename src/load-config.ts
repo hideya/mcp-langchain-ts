@@ -11,7 +11,7 @@ export interface LLMConfig {
   maxTokens?: number;
 }
 
-export interface MCPServerConfig {
+export interface McpServerConfig {
   command: string;
   args: string[];
   env?: Record<string, string>;
@@ -20,7 +20,7 @@ export interface MCPServerConfig {
 export interface Config {
   llm: LLMConfig;
   mcpServers: {
-    [key: string]: MCPServerConfig;
+    [key: string]: McpServerConfig;
   }
 }
 
@@ -64,7 +64,7 @@ function validateConfig(config: any): asserts config is Config {
 
   Object.entries(config.mcpServers).forEach(([key, value]) => {
     try {
-      validateMCPServerConfig(value);
+      validateMcpServerConfig(value);
     } catch (error) {
       throw new Error(`Invalid configuration for MCP server "${key}": ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -95,7 +95,7 @@ function validateLLMConfig(llmConfig: any): asserts llmConfig is LLMConfig {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateMCPServerConfig(serverConfig: any): asserts serverConfig is MCPServerConfig {
+function validateMcpServerConfig(serverConfig: any): asserts serverConfig is McpServerConfig {
   if (typeof serverConfig !== 'object' || serverConfig === null) {
     throw new Error('MCP server configuration must be an object');
   }

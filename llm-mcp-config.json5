@@ -11,19 +11,19 @@
         "provider": "openai",
         "modelName": "gpt-4o-mini",
         "temperature": 0.0,
-        "mexTokens": 1000,
+        "maxTokens": 1000,
     },
     // "llm": {
     //     "provider": "anthropic",
     //     "modelName": "claude-3-5-haiku-latest",
     //     "temperature": 0.0,
-    //     "mexTokens": 1000,
+    //     "maxTokens": 1000,
     // },
     // "llm": {
     //     "provider": "groq",
     //     "modelName": "mixtral-8x7b-32768",
     //     "temperature": 0.0,
-    //     "mexTokens": 1000,
+    //     "maxTokens": 1000,
     // },
     "mcpServers": {
         // https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem

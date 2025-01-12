@@ -4,7 +4,7 @@
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { MemorySaver } from '@langchain/langgraph';
 import { HumanMessage } from '@langchain/core/messages';
-import { convertMCPServersToLangChainTools, MCPServerCleanupFunction } from './langchain-mcp-tools.js';
+import { convertMcpToLangchainTools, McpCleanupFunction } from './langchain-mcp-tools.js';
 import { initChatModel } from './init-chat-model.js';
 import { loadConfig, Config } from './load-config.js';
 import readline from 'readline';
@@ -128,7 +128,7 @@ async function initializeReactAgent(config: Config) {
   const llm = initChatModel(config.llm);
 
   console.log(`Initializing ${Object.keys(config.mcpServers).length} MCP server(s)...\n`);
-  const { tools, cleanup } = await convertMCPServersToLangChainTools(
+  const { tools, cleanup } = await convertMcpToLangchainTools(
     config.mcpServers,
     { logLevel: 'info' }
   );
@@ -144,7 +144,7 @@ async function initializeReactAgent(config: Config) {
 
 // Main
 async function main(): Promise<void> {
-  let mcpCleanup: MCPServerCleanupFunction | undefined;
+  let mcpCleanup: McpServerCleanupFunction | undefined;
 
   try {
     const argv = parseArguments();
