@@ -152,7 +152,7 @@ async function convertSingleMcpToLangchainTools(
         schema: jsonSchemaToZod(tool.inputSchema as JsonSchema) as z.ZodObject<any>,
 
         func: async (input) => {
-          logger.info(`MCP tool "${tool.name}" of "${serverName}" received input:`, input);
+          logger.info(`MCP tool "${serverName}"/"${tool.name}" received input:`, input);
 
           // Execute tool call
           const result = await client?.request(
