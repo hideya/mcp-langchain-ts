@@ -4,7 +4,7 @@
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { MemorySaver } from '@langchain/langgraph';
 import { HumanMessage } from '@langchain/core/messages';
-import { convertMcpToLangchainTools, McpCleanupFunction } from './langchain-mcp-tools.js';
+import { convertMcpToLangchainTools, McpServerCleanupFunction } from './langchain-mcp-tools.js';
 import { initChatModel } from './init-chat-model.js';
 import { loadConfig, Config } from './load-config.js';
 import readline from 'readline';
@@ -16,8 +16,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Constants
-const DEFAULT_CONFIG_PATH = './llm-mcp-config.json5';
-
 const SAMPLE_QUERIES = [
   'Whats the weather like in SF tomorrow?',
   'Read and briefly summarize the file ./LICENSE',
@@ -34,6 +32,7 @@ const COLORS = {
 // CLI argument setup
 interface Arguments {
   config: string;
+  verbose: boolean;
   [key: string]: unknown;
 }
 
@@ -43,7 +42,14 @@ const parseArguments = (): Arguments => {
       config: {
         type: 'string',
         description: 'Path to config file',
-        demandOption: false
+        demandOption: false,
+        default: './llm-mcp-config.json5'
+      },
+      verbose: {
+        type: 'boolean',
+        description: 'Run with verbose logging',
+        demandOption: false,
+        default: false
       },
     })
     .help()
@@ -93,7 +99,8 @@ async function getUserQuery(
 // Conversation loop
 async function handleConversation(
   agent: ReturnType<typeof createReactAgent>,
-  remainingQueries: string[]
+  remainingQueries: string[],
+  verbose: boolean
 ): Promise<void> {
   console.log('\nConversation started. Type "quit" or "q" to end the conversation.\n');
   console.log('Sample Queries (type just enter to supply them one by one):');
@@ -101,7 +108,7 @@ async function handleConversation(
   console.log();
 
   const rl = createReadlineInterface();
- 
+
   while (true) {
     const query = await getUserQuery(rl, remainingQueries);
     console.log();
@@ -117,6 +124,13 @@ async function handleConversation(
     );
 
     const result = agentFinalState.messages[agentFinalState.messages.length - 1].content;
+    const messageOneBefore = agentFinalState.messages[agentFinalState.messages.length - 2]
+    if (messageOneBefore.constructor.name === 'ToolMessage') {
+      if (verbose) {
+        console.log(messageOneBefore.content);
+      }
+      console.log(); // give a space
+    }
 
     console.log(`${COLORS.CYAN}${result}${COLORS.RESET}\n`);
   }
@@ -148,13 +162,12 @@ async function main(): Promise<void> {
 
   try {
     const argv = parseArguments();
-    const configPath = argv.config || process.env.CONFIG_FILE || DEFAULT_CONFIG_PATH;
-    const config = loadConfig(configPath);
+    const config = loadConfig(argv.config);
 
     const { agent, cleanup } = await initializeReactAgent(config);
     mcpCleanup = cleanup;
 
-    await handleConversation(agent, [...SAMPLE_QUERIES]);
+    await handleConversation(agent, [...SAMPLE_QUERIES], argv.verbose);
 
   } finally {
     if (mcpCleanup) {

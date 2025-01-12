@@ -152,7 +152,7 @@ async function convertSingleMcpToLangchainTools(
         schema: jsonSchemaToZod(tool.inputSchema as JsonSchema) as z.ZodObject<any>,
 
         func: async (input) => {
-          logger.info(`MCP Tool "${tool.name}" received input:`, input);
+          logger.info(`MCP tool "${tool.name}" of "${serverName}" received input:`, input);
 
           // Execute tool call
           const result = await client?.request(
@@ -167,7 +167,7 @@ async function convertSingleMcpToLangchainTools(
           );
 
           const roughLength = JSON.stringify(result).length;
-          logger.info(`MCP Tool "${tool.name}" received result (length: ${roughLength})`);
+          logger.info(`MCP tool "${serverName}"/"${tool.name}" received result (length: ${roughLength})`);
           logger.debug('result:', result);
 
           const filteredResult = result?.content

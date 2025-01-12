@@ -1,4 +1,19 @@
 {
+  "name": "mcp-client-langchain-ts",
+  "version": "0.1.0",
+  "description": "MCP Client Using LangChain / TypeScript",
+  "license": "MIT",
+  "keywords": [
+    "modelcontextprotocol",
+    "mcp",
+    "mcp-client",
+    "langchain",
+    "langchain-tyoescript",
+    "tool-calling",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "hideya kawahara",
   "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
