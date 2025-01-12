@@ -3,7 +3,7 @@
 This simple [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
 client demonstrates MCP server invocations by LangChain ReAct Agent.
 
-It leverages a utility function `convertMCPServersToLangChainTools()` from
+It leverages a utility function `convertMcpToLangchainTools()` from
 [`@h1deya/langchain-mcp-tools`](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools),
 which initializes specified MCP servers,
 and returns [LangChain Tools](https://js.langchain.com/docs/how_to/tool_calling/)
@@ -54,6 +54,16 @@ LLMs from Anthropic, OpenAI and Groq are currently supported.
 Run the app:
 ```bash
 npm start
+```
+
+Run in verbose mode:
+```bash
+npm run start:v
+```
+
+See commandline options:
+```bash
+npm run start:h
 ```
 
 At the prompt, you can simply press Enter to use sample queries that perform MCP server tool invocations.
