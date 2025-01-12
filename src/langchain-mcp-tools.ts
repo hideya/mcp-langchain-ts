@@ -169,7 +169,7 @@ async function convertSingleMcpToLangchainTools(
           const resultStringfied = JSON.stringify(result?.content)
           const roughLength = resultStringfied.length;
           logger.info(`MCP tool "${serverName}"/"${tool.name}" received result (length: ${roughLength})`);
-          logger.debug('result:', resultStringfied);
+          logger.debug('result:', result?.content);
           return resultStringfied;
         },
       })

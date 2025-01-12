@@ -33,7 +33,7 @@ const parseArguments = (): Arguments => {
         type: 'string',
         description: 'Path to config file',
         demandOption: false,
-        default: 'llm-mcp-config.json5',
+        default: 'llm_mcp_config.json5',
         alias: 'c',
       },
       verbose: {
@@ -117,14 +117,10 @@ async function handleConversation(
       { configurable: { thread_id: 'test-thread' } }
     );
 
-    // the last message should be an AIMessage
+    // the last message is an AIMessage
     const result = agentFinalState.messages[agentFinalState.messages.length - 1].content;
     const messageOneBefore = agentFinalState.messages[agentFinalState.messages.length - 2]
     if (messageOneBefore.constructor.name === 'ToolMessage') {
-      if (verbose) {
-        // show tools call respose
-        console.log(messageOneBefore.content);
-      }
       console.log(); // new line after tool call output
     }
 
@@ -133,7 +129,7 @@ async function handleConversation(
 }
 
 // Application initialization
-async function initializeReactAgent(config: Config) {
+async function initializeReactAgent(config: Config, verbose: boolean) {
   console.log('Initializing model...', config.llm, '\n');
   const llmConfig = {
     modelProvider: config.llm.model_provider,
@@ -146,7 +142,7 @@ async function initializeReactAgent(config: Config) {
   console.log(`Initializing ${Object.keys(config.mcp_servers).length} MCP server(s)...\n`);
   const { tools, cleanup } = await convertMcpToLangchainTools(
     config.mcp_servers,
-    { logLevel: 'info' }
+    { logLevel: verbose ? 'trace' : 'info' }
   );
 
   const agent = createReactAgent({
@@ -166,7 +162,7 @@ async function main(): Promise<void> {
     const argv = parseArguments();
     const config = loadConfig(argv.config);
 
-    const { agent, cleanup } = await initializeReactAgent(config);
+    const { agent, cleanup } = await initializeReactAgent(config, argv.verbose);
     mcpCleanup = cleanup;
 
     await handleConversation(agent, config.sample_queries ?? [], argv.verbose);
