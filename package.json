@@ -16,7 +16,7 @@
   "author": "hideya kawahara",
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts -h",
+    "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src"
   },
