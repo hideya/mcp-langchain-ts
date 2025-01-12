@@ -43,17 +43,20 @@ const parseArguments = (): Arguments => {
         type: 'string',
         description: 'Path to config file',
         demandOption: false,
-        default: './llm-mcp-config.json5'
+        default: './llm-mcp-config.json5',
+        alias: 'c',
       },
       verbose: {
         type: 'boolean',
         description: 'Run with verbose logging',
         demandOption: false,
-        default: false
+        default: false,
+        alias: 'V',
       },
     })
     .help()
     .alias('help', 'h')
+    .alias('version', 'v')
     .parseSync() as Arguments;
 };
 
