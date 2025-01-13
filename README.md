@@ -4,16 +4,16 @@ This simple [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
 client demonstrates MCP server invocations by LangChain ReAct Agent.
 
 It leverages a utility function `convertMcpToLangchainTools()` from
-[`@h1deya/langchain-mcp-tools`](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools),
-which initializes specified MCP servers,
-and returns [LangChain Tools](https://js.langchain.com/docs/how_to/tool_calling/)
-that wrap all the tools found in the MCP servers.
+[`@h1deya/langchain-mcp-tools`](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools).  
+This function handles parallel initialization of specified multiple MCP servers
+and converts their available tools into a list of
+[LangChain-compatible tools](https://js.langchain.com/docs/how_to/tool_calling/).
 
 LLMs from Anthropic, OpenAI and Groq are currently supported.
 
 ## Requirements
 
-- Node.js version 16 or higher installed
+- Node.js 16+
 - API keys from [Anthropic](https://console.anthropic.com/settings/keys),
   [OpenAI](https://platform.openai.com/api-keys), and/or
   [Groq](https://console.groq.com/keys)
