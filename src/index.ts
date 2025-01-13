@@ -75,14 +75,14 @@ async function getUserQuery(
   }
 
   if (query === '') {
-    const sampleQuery = remainingQueries.shift();
-    if (!sampleQuery) {
+    const exampleQuery = remainingQueries.shift();
+    if (!exampleQuery) {
       console.log('\nPlease type a query, or "quit" or "q" to exit\n');
       return await getUserQuery(rl, remainingQueries);
     }
     process.stdout.write('\x1b[1A\x1b[2K'); // Move up and clear the line
-    console.log(`${COLORS.YELLOW}Sample Query: ${sampleQuery}${COLORS.RESET}`);
-    return sampleQuery;
+    console.log(`${COLORS.YELLOW}Example Query: ${exampleQuery}${COLORS.RESET}`);
+    return exampleQuery;
   }
 
   return query;
@@ -96,7 +96,7 @@ async function handleConversation(
 ): Promise<void> {
   console.log('\nConversation started. Type "quit" or "q" to end the conversation.\n');
   if (remainingQueries && remainingQueries.length > 0) {
-    console.log('Sample Queries (just type Enter to supply them one by one):');
+    console.log('Exaample Queries (just type Enter to supply them one by one):');
     remainingQueries.forEach(query => console.log(`- ${query}`));
     console.log();
   }
@@ -142,7 +142,7 @@ async function initializeReactAgent(config: Config, verbose: boolean) {
   console.log(`Initializing ${Object.keys(config.mcp_servers).length} MCP server(s)...\n`);
   const { tools, cleanup } = await convertMcpToLangchainTools(
     config.mcp_servers,
-    { logLevel: verbose ? 'trace' : 'info' }
+    { logLevel: verbose ? 'debug' : 'info' }
   );
 
   const agent = createReactAgent({
@@ -165,7 +165,7 @@ async function main(): Promise<void> {
     const { agent, cleanup } = await initializeReactAgent(config, argv.verbose);
     mcpCleanup = cleanup;
 
-    await handleConversation(agent, config.sample_queries ?? [], argv.verbose);
+    await handleConversation(agent, config.example_queries ?? [], argv.verbose);
 
   } finally {
     if (mcpCleanup) {

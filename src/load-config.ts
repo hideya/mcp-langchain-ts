@@ -16,7 +16,7 @@ export interface MCPServerConfig {
 
 export interface Config {
   llm: LLMConfig;
-  sample_queries?: string[];
+  example_queries?: string[];
   mcp_servers: {
     [key: string]: MCPServerConfig;
   }
@@ -55,12 +55,12 @@ function validateConfig(config: unknown): asserts config is Config {
   }
   validateLLMConfig(config.llm);
 
-  if ('sample_queries' in config) {
-    if (!Array.isArray(config.sample_queries)) {
-      throw new Error('sample_queries must be an array if provided');
+  if ('example_queries' in config) {
+    if (!Array.isArray(config.example_queries)) {
+      throw new Error('example_queries must be an array if provided');
     }
-    if (config.sample_queries.some((query: unknown) => typeof query !== 'string')) {
-      throw new Error('All sample queries must be strings');
+    if (config.example_queries.some((query: unknown) => typeof query !== 'string')) {
+      throw new Error('All example queries must be strings');
     }
   }
 

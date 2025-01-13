@@ -171,6 +171,12 @@ async function convertSingleMcpToLangchainTools(
           logger.info(`MCP tool "${serverName}"/"${tool.name}" received result (length: ${roughLength})`);
           logger.debug('result:', result?.content);
           return resultStringfied;
+
+          // const filteredResult = result?.content
+          //   .filter(content => content.type === 'text')
+          //   .map(content => content.text)
+          //   .join('\n\n');
+          // return filteredResult;
         },
       })
     ));

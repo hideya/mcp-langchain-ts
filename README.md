@@ -66,6 +66,6 @@ See commandline options:
 npm run start:h
 ```
 
-At the prompt, you can simply press Enter to use sample queries that perform MCP server tool invocations.
+At the prompt, you can simply press Enter to use example queries that perform MCP server tool invocations.
 
-Sample queries can be configured in  `llm_mcp_config.json5`
+Exaample queries can be configured in  `llm_mcp_config.json5`
