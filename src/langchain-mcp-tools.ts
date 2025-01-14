@@ -45,16 +45,16 @@ class McpInitializationError extends Error implements McpError {
 /**
  * Initializes multiple MCP (Model Context Protocol) servers and converts them into LangChain tools.
  * This function concurrently sets up all specified servers and aggregates their tools.
- * 
+ *
  * @param configs - A mapping of server names to their respective configurations
  * @param options - Optional logging configuration
- * 
+ *
  * @returns A promise that resolves to:
  *          - tools: Array of DynamicStructuredTool instances ready for use with LangChain
  *          - cleanup: Function to properly terminate all server connections
- * 
+ *
  * @throws McpInitializationError if any server fails to initialize
- * 
+ *
  * @example
  * const { tools, cleanup } = await convertMcpToLangchainTools({
  *   filesystem: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-filesystem', '.'] },
@@ -118,18 +118,18 @@ export async function convertMcpToLangchainTools(
  * Initializes a single MCP server and converts its capabilities into LangChain tools.
  * Sets up a connection to the server, retrieves available tools, and creates corresponding
  * LangChain tool instances.
- * 
+ *
  * @param serverName - Unique identifier for the server instance
  * @param config - Server configuration including command, arguments, and environment variables
  * @param logger - Logger instance for recording operation details
- * 
+ *
  * @returns A promise that resolves to:
  *          - tools: Array of DynamicStructuredTool instances from this server
  *          - cleanup: Function to properly terminate the server connection
- * 
+ *
  * @throws McpInitializationError if server initialization fails
  *         (includes connection errors, tool listing failures)
- * 
+ *
  * @internal This function is meant to be called by convertMcpToLangchainTools
  */
 async function convertSingleMcpToLangchainTools(

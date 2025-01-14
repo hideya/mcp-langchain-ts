@@ -6,7 +6,7 @@ client demonstrates MCP server invocations by LangChain ReAct Agent.
 It leverages a utility function `convertMcpToLangchainTools()` from
 [`@h1deya/langchain-mcp-tools`](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools).  
 This function handles parallel initialization of specified multiple MCP servers
-and converts their available tools into a list of
+and converts their available tools into an array of
 [LangChain-compatible tools](https://js.langchain.com/docs/how_to/tool_calling/).
 
 LLMs from Anthropic, OpenAI and Groq are currently supported.
