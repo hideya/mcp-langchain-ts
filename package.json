@@ -1,6 +1,6 @@
 {
   "name": "mcp-client-langchain-ts",
-  "version": "0.1.0",
+  "version": "0.1.6",
   "description": "MCP Client Using LangChain / TypeScript",
   "license": "MIT",
   "keywords": [
@@ -21,7 +21,7 @@
     "start:v": "tsx src/index.ts -v",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src",
-    "clean": "rm -rf node_modules"
+    "clean": "git clean -fdx -e .env"
   },
   "dependencies": {
     "@langchain/anthropic": "^0.3.11",
