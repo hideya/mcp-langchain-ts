@@ -21,7 +21,7 @@
     "start:v": "tsx src/index.ts -v",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src",
-    "clean": "git clean -fdx -e .env"
+    "clean": "git clean -fdxn -e .env && read -p 'OK?' && git clean -fdx -e .env"
   },
   "dependencies": {
     "@langchain/anthropic": "^0.3.11",

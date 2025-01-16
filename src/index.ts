@@ -91,8 +91,7 @@ async function getUserQuery(
 // Conversation loop
 async function handleConversation(
   agent: ReturnType<typeof createReactAgent>,
-  remainingQueries: string[],
-  verbose: boolean
+  remainingQueries: string[]
 ): Promise<void> {
   console.log('\nConversation started. Type "quit" or "q" to end the conversation.\n');
   if (remainingQueries && remainingQueries.length > 0) {
@@ -165,7 +164,7 @@ async function main(): Promise<void> {
     const { agent, cleanup } = await initializeReactAgent(config, argv.verbose);
     mcpCleanup = cleanup;
 
-    await handleConversation(agent, config.example_queries ?? [], argv.verbose);
+    await handleConversation(agent, config.example_queries ?? []);
 
   } finally {
     await mcpCleanup?.();
