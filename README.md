@@ -11,6 +11,9 @@ and converts their available tools into an array of LangChain-compatible tools
 
 LLMs from Anthropic, OpenAI and Groq are currently supported.
 
+A python version of this MCP client is available
+[here](https://github.com/hideya/mcp-client-langchain-py)
+
 ## Requirements
 
 - Node.js 16+
